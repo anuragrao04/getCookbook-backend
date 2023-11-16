@@ -1,11 +1,10 @@
-// Add Express
+// Add Expres
 const express = require("express");
 const bodyParser = require("body-parser");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 // Initialize Express
 const app = express();
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -29,17 +28,17 @@ async function connect_to_db() {
   return [database, collection];
 }
 
-let database, collection;
-connect_to_db().then(([db, col]) => {
-  console.log("Connected to database.");
-  database = db;
-  collection = col;
-});
+const connectMiddleware = async (req, res, next) => {
+  const [db, col] = await connect_to_db();
+  req.db = db;
+  req.collection = col;
+  next();
+};
 
-app.post("/make_a_recipe", async (req, res) => {
+app.post("/make_a_recipe", connectMiddleware, async (req, res) => {
   const recipe = req.body;
   try {
-    const result = await collection.insertOne(recipe);
+    const result = await req.collection.insertOne(recipe);
     res.sendStatus(200); // 200 OK
   } catch (e) {
     res.sendStatus(500); // 500 internal server error
@@ -47,9 +46,9 @@ app.post("/make_a_recipe", async (req, res) => {
   }
 });
 
-app.get("/get_all_recipes", async (req, res) => {
+app.get("/get_all_recipes", connectMiddleware, async (req, res) => {
   try {
-    const result = await collection.find({}).toArray();
+    const result = await req.collection.find({}).toArray();
     res.json(result);
   } catch (e) {
     res.sendStatus(500);
@@ -63,7 +62,7 @@ app.get("/", (req, res) => {
 });
 
 // Initialize server
-app.listen(5000, () => {
+app.listen(6000, () => {
   console.log("Running on port 5000.");
 });
 
