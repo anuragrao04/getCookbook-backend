@@ -56,14 +56,26 @@ app.get("/get_all_recipes", connectMiddleware, async (req, res) => {
   }
 });
 
-// On GET request
+app.get("/get_recipes_per_user", connectMiddleware, async (req, res) => {
+  const user = req.query.user_id;
+  try {
+    const result = await req.collection
+      .find({ created_by_user_id: user })
+      .toArray();
+    res.json(result);
+  } catch (e) {
+    res.sendStatus(500);
+    console.log(e);
+  }
+});
+
 app.get("/", (req, res) => {
   res.send("{ message: 'Hello World!' }");
 });
 
 // Initialize server
 app.listen(6000, () => {
-  console.log("Running on port 5000.");
+  console.log("Running on port 6000.");
 });
 
 // export it so that it can be recognised by vercel's serverless function
