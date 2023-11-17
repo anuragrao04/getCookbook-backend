@@ -8,9 +8,9 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const uri = process.env["MONGODB_URI"];
-const uri =
-  "mongodb+srv://anuragrao:super-secure-password@get-cookbook-cluster.bezotsr.mongodb.net/?retryWrites=true&w=majority";
+require("dotenv").config();
+const uri = process.env.MONGODB_URI;
+console.log(uri);
 async function connect_to_db() {
   const client = new MongoClient(uri, {
     serverApi: {
@@ -70,7 +70,7 @@ app.get("/get_recipes_per_user", connectMiddleware, async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("{ message: 'Hello World!' }");
+  res.send("You've reached the API for Get Cookbook!");
 });
 
 // Initialize server
