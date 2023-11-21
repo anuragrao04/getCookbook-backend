@@ -69,6 +69,31 @@ app.get("/get_recipes_per_user", connectMiddleware, async (req, res) => {
   }
 });
 
+app.post("/search_ingredients", async (req, res) => {
+  res.json([
+    {
+      image: "/chicken.svg",
+      name: "chicken",
+    },
+    {
+      image: "/salt.svg",
+      name: "salt",
+    },
+    {
+      image: "/sugar.svg",
+      name: "sugar",
+    },
+    {
+      image: "/rice.svg",
+      name: "rice",
+    },
+    {
+      image: "/chilli_powder.svg",
+      name: "chilli powder",
+    },
+  ]);
+});
+
 app.get("/", (req, res) => {
   res.send("You've reached the API for Get Cookbook!");
 });
