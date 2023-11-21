@@ -69,29 +69,14 @@ app.get("/get_recipes_per_user", connectMiddleware, async (req, res) => {
   }
 });
 
-app.post("/search_ingredients", async (req, res) => {
-  res.json([
-    {
-      image: "/chicken.svg",
-      name: "chicken",
-    },
-    {
-      image: "/salt.svg",
-      name: "salt",
-    },
-    {
-      image: "/sugar.svg",
-      name: "sugar",
-    },
-    {
-      image: "/rice.svg",
-      name: "rice",
-    },
-    {
-      image: "/chilli_powder.svg",
-      name: "chilli powder",
-    },
-  ]);
+app.post("/search_ingredients", connectMiddleware, async (req, res) => {
+  const search_term = req.body.searchTerm;
+  const regex = new RegExp(search_term);
+  const collection = req.db.collection("ingredients");
+
+  const result = await collection.find({ name: { $regex: regex } }).toArray();
+
+  res.json(result);
 });
 
 app.get("/", (req, res) => {
