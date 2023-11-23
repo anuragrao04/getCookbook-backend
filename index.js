@@ -37,8 +37,12 @@ const connectMiddleware = async (req, res, next) => {
 
 app.post("/make_a_recipe", connectMiddleware, async (req, res) => {
   const recipe = req.body;
+  const recipe_data = { _id: recipe._id, editorjs_data: recipe.recipe };
+  delete recipe.recipe;
   try {
-    const result = await req.collection.insertOne(recipe);
+    await req.collection.insertOne(recipe);
+    const recipe_collection = req.db.collection("recipe_data");
+    await recipe_collection.insertOne(recipe_data);
     res.sendStatus(200); // 200 OK
   } catch (e) {
     res.sendStatus(500); // 500 internal server error
@@ -73,9 +77,14 @@ app.post("/search_ingredients", connectMiddleware, async (req, res) => {
   const search_term = req.body.searchTerm;
   const regex = new RegExp(search_term);
   const collection = req.db.collection("ingredients");
-
   const result = await collection.find({ name: { $regex: regex } }).toArray();
+  res.json(result);
+});
 
+app.get("/get_editor_data", connectMiddleware, async (req, res) => {
+  const recipe_id = req.query.recipe_id;
+  const recipe_collection = req.db.collection("recipe_data");
+  const result = await recipe_collection.findOne({ _id: recipe_id });
   res.json(result);
 });
 
