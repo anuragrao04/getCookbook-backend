@@ -62,9 +62,10 @@ app.get("/get_all_recipes", connectMiddleware, async (req, res) => {
 
 app.get("/get_recipes_per_user", connectMiddleware, async (req, res) => {
   const user = req.query.user_id;
+  const regex = new RegExp(user);
   try {
     const result = await req.collection
-      .find({ created_by_user_id: user })
+      .find({ _id: { $regex: regex } })
       .toArray();
     res.json(result);
   } catch (e) {
