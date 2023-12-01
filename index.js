@@ -85,7 +85,16 @@ app.post("/search_ingredients", connectMiddleware, async (req, res) => {
 app.get("/get_editor_data", connectMiddleware, async (req, res) => {
   const recipe_id = req.query.recipe_id;
   const recipe_collection = req.db.collection("recipe_data");
-  const result = await recipe_collection.findOne({ _id: recipe_id });
+  const result_editor_data = await recipe_collection.findOne({
+    _id: recipe_id,
+  });
+  console.log(recipe_id);
+  const result_metadata = await req.collection.findOne({ _id: recipe_id });
+  delete result_metadata._id;
+  const result = {
+    ...result_editor_data,
+    ...result_metadata,
+  };
   res.json(result);
 });
 
